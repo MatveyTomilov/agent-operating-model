@@ -1,5 +1,5 @@
 <!-- portable-operating-model
-version: 1.0.0
+version: 1.1.0
 canonical-repository: MatveyTomilov/agent-operating-model
 -->
 
@@ -102,60 +102,133 @@ when its domain, history, hosting model, or team convention requires it.
   `dev-template-<task>` for reusable platform/template work, and
   `dev-both-<task>` for a real shared contract, composition, migration, or CI
   change. The repository boundary, not a branch label, is authoritative.
-- Standard CI is the ordinary task and integration gate. A project's complete
-  release matrix is required for promotion. Promotion and deploy always require
-  independent review and explicit owner authorization.
+- Task delivery requires the repository's applicable task-level checks selected
+  by Codex for scope and risk; there is no universal broad-CI task gate. Full
+  repository-defined release validation, independent technical review and
+  explicit owner authorization are mandatory for integration-to-stable
+  promotion. Release and deploy also require their applicable explicit owner
+  authorization and safety gates.
 - After local verification, an implementation agent may make an ordinary
   non-force push only of its own short-lived task branch when project rules
   allow it. Never direct-push integration or stable branches unless a project
   explicitly defines and authorizes that operation.
 
-## Default multi-agent workflow
+## Roles and development loop
 
-For substantial work, use this route unless the nearest project instructions
-explicitly define a different one:
+For substantial repository work, use this canonical loop unless the nearest
+project records an intentional owner-approved override:
 
 ```text
-User + ChatGPT
-  → Codex DESIGN
-  → Cursor IMPLEMENT
-  → Codex REVIEW / TECHNICAL FIX LOOP
-  → Codex MERGE TO INTEGRATION
-  → User + ChatGPT
+OWNER
+  → CHATGPT TECH LEAD
+  → CODEX TECHNICAL PROXY / REPOSITORY GATEKEEPER
+  → CURSOR IMPLEMENTER
+  → CODEX REVIEW / INTEGRATION GATE
+  → INTEGRATION
+  → OWNER + CHATGPT PRODUCT CHECK
 ```
 
-- **User + ChatGPT** own product, project, and architecture decisions: goals,
-  constraints, invariants, and acceptance criteria. They are not a mechanical
-  repository-review or task-to-integration merge stage.
-- **Codex DESIGN** first investigates the actual repository and produces an
-  implementation-ready task for Cursor. Codex implementing ordinary work is a
-  narrow exception that needs an explicit reason and authorization.
-- **Cursor IMPLEMENT** works only within the approved task scope and task
-  branch, updates applicable tests and documentation, and runs available
-  checks. Its completion status is exactly `READY FOR CODEX REVIEW` or
-  `NOT READY`. Cursor does not merge, rewrite history, or remove branches or
+- **Owner + ChatGPT own WHAT:** business/product goals, desired outcomes,
+  constraints, architecture direction, invariants, acceptance outcomes and
+  owner/business/legal decisions. They need not guess files, functions,
+  migrations, implementation decomposition or repository-specific HOW. They
+  are not a mandatory second mechanical code-review or ordinary merge stage.
+- **Codex is the mandatory technical proxy** for substantial repository work.
+  Before Cursor implementation, inspect current repository state, AGENTS.md,
+  relevant decisions/docs, architecture, code, migrations, tests, CI, existing
+  mechanisms, dependencies, boundaries and likely regression surfaces.
+  Translate the approved WHAT into repository-aware HOW: affected surfaces,
+  abstractions to reuse, changes to make, exclusions, concrete acceptance
+  criteria and the targeted checks/tests needed for review. Produce an
+  implementation-ready Cursor task. The owner retains repository ownership and
+  final decisions; this role is not REPO OWNER.
+- **Cursor is the implementation executor.** Work within Codex's task and its
+  task branch/worktree. Do not start an independent architecture/discovery or
+  research loop, reconsider approved decisions, expand scope, substitute an
+  architecture without blocker escalation, or choose a broad repository test
+  strategy. Necessary implementation-level checks are allowed; add or change
+  targeted tests when assigned by Codex and run targeted checks as instructed.
+  Report the artifact, completed scope, checks actually performed and blockers
+  concisely as `READY FOR CODEX REVIEW` or `NOT READY`, without a broad
+  self-review ceremony. Do not merge, rewrite history or remove branches or
   worktrees.
-- **Codex REVIEW** independently verifies actual artifacts, not merely the
-  implementation report: branch/HEAD, ancestry, diff, acceptance criteria,
-  architecture boundaries, checks, CI, documentation, regressions, and scope
-  as applicable. The result is exactly `APPROVE` or `REQUEST CHANGES`.
-- **TECHNICAL FIX LOOP.** `REQUEST CHANGES` normally creates a precise Cursor
-  correction and a new Codex review. Escalate to User + ChatGPT only for a real
-  new product, project, or architecture decision.
-- **Codex MERGE TO INTEGRATION.** A normal task-to-integration merge may use a
-  fast path when the nearest project permits it and all of these hold: the
-  independently reviewed HEAD and diff are unchanged; required applicable
-  checks and CI are green; the tree is clean; the target is the repository's
-  integration branch (`dev` by default); no substantive conflict resolution or
-  extra edits are needed; and no force-push is required. Verify the resulting
-  integration HEAD and applicable post-merge checks. This limited fast path
-  does not authorize promotion, release, deploy, or history rewriting.
-- **Not a stage.** Work, a worktree, a cloud workspace, Remote Control, or a
-  file-transfer tool does not create an engineering role or stage.
-- Use at most two substantial parallel worktrees, and only when they are
-  independently reviewable and have no unsafe overlap through migrations, data
-  contracts, customer workflow, or implementation surfaces. Otherwise work
-  sequentially.
+- **Codex implementation** remains a narrow exception requiring explicit
+  reason and authorization. Implementation is not review: such an exception
+  still needs an independent review of the exact implementation artifact.
+- **Technical fix loop:** Codex returns `APPROVE` or `REQUEST CHANGES`.
+  A correction becomes a concrete Cursor fix/test task and a new review of the
+  new artifact. Resolve compiler/build errors, implementation bugs, missed
+  migration wiring, test fixes, incorrect queries, naming and contract
+  mismatches from repository evidence without routine owner escalation.
+  Escalate only a new material product decision, architecture direction,
+  business/legal semantics, scope change or unresolved trade-off not covered
+  by the approved decision.
+- **Not a stage:** a worktree, cloud workspace, Remote Control or file transfer
+  does not create an engineering role.
+- Use at most two substantial parallel worktrees, only when independently
+  reviewable without unsafe overlap through migrations, data contracts,
+  customer workflow or implementation surfaces. Otherwise work sequentially.
+
+## Three verification levels
+
+### Level 1 — Task review and integration gate
+
+Codex independently inspects the actual exact HEAD/diff against its task and
+acceptance criteria, including applicable architecture boundaries, migration
+safety, tenant/security concerns, documentation and regression surfaces. It may
+run inexpensive targeted checks or assign Cursor a specific test, scenario or
+correction when evidence is insufficient.
+
+Task-level `APPROVE` means the implementation matches the task and no blocking
+technical defect was found within the applicable scope. It is not proof that
+all regressions across the entire product have been excluded.
+
+Do not automatically run complete backend, frontend, integration, E2E, security,
+regression suites or a platform/template release matrix after every ordinary
+task. A nearest repository may explicitly require broader verification for a
+particular change class; identify that rule and its applicability. Do not turn
+"required checks" into an implicit full-suite requirement for every task.
+
+Codex is the technical integration gate. Where project Git rules permit normal
+task delivery, merge only the unchanged independently reviewed HEAD/diff into
+the repository integration line, with applicable task-level checks satisfied,
+a clean/known artifact, no silent extra edits, no substantive unresolved
+conflict and no force. Verify the resulting integration HEAD and applicable
+scoped post-merge checks. Any substantive edit or conflict resolution requires
+new review. No mandatory second ChatGPT mechanical review or per-task owner
+merge approval is added. This permission does not authorize stable promotion,
+release, deploy, history rewriting or destructive operations.
+
+### Level 2 — Product smoke
+
+After integration, Owner + ChatGPT inspect the product result: the feature
+exists, behavior and UI/flow match the goal, and the next step is clear. This is
+product acceptance, not a second mechanical code review. A discovered problem
+returns through Codex diagnostic discovery, a concrete Cursor fix/test task,
+Codex review and integration. Integrated behavior is assessed on the integration
+line rather than treating separate task approvals as a system-wide guarantee.
+
+### Level 3 — Full release validation
+
+Before integration-to-stable promotion, Codex performs the full
+repository-defined release validation: all applicable complete tests,
+frontend/backend and integration/regression checks, migrations, architecture
+boundaries, security-sensitive areas, generated artifacts, reusable/template
+checks, docs/current-state consistency, release CI and supported OS/platform
+matrix, plus any other repository-defined gates.
+
+```text
+INTEGRATION
+  → FULL RELEASE VALIDATION
+  → INDEPENDENT TECHNICAL REVIEW
+  → EXPLICIT OWNER AUTHORIZATION
+  → STABLE
+```
+
+This full validation is mandatory at the promotion boundary, not automatically
+after each small task. Release and deploy remain separately owner-authorized;
+force-push restrictions and destructive-operation/production safety remain in
+force.
 
 ## Documentation and decisions
 
