@@ -12,7 +12,7 @@ operating model.
 
 ## Version and maintenance
 
-The proposed portable model version is **1.2.0**, recorded in `VERSION` and the
+The portable operating model version is **1.2.0**, recorded in `VERSION` and the
 `AGENTS.md` provenance header. The 24 September 2026 amendment adds local
 Codex-to-Cursor CLI orchestration while preserving distinct implementation and
 review roles and the existing Git, promotion, release, and deploy gates.
