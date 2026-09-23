@@ -1,5 +1,5 @@
 <!-- portable-operating-model
-version: 1.1.0
+version: 1.2.0
 canonical-repository: MatveyTomilov/agent-operating-model
 -->
 
@@ -122,7 +122,9 @@ project records an intentional owner-approved override:
 OWNER
   → CHATGPT TECH LEAD
   → CODEX TECHNICAL PROXY / REPOSITORY GATEKEEPER
+  → CODEX LAUNCHES CURSOR CLI
   → CURSOR IMPLEMENTER
+  → CURSOR PROCESS EXITS
   → CODEX REVIEW / INTEGRATION GATE
   → INTEGRATION
   → OWNER + CHATGPT PRODUCT CHECK
@@ -152,6 +154,23 @@ OWNER
   concisely as `READY FOR CODEX REVIEW` or `NOT READY`, without a broad
   self-review ceremony. Do not merge, rewrite history or remove branches or
   worktrees.
+- **Local Cursor orchestration.** When a working local Cursor CLI is available,
+  Codex launches it directly in the verified task worktree with an explicit
+  repository-approved model and an implementation-ready task. Manual owner
+  copy/paste between Codex and Cursor is not the normal handoff. Codex waits
+  for process completion through a blocking or event-driven mechanism without
+  repeated model-driven status polling, then resumes automatically. Before a
+  substantial launch, verify the worktree, branch, HEAD/base, status, relevant
+  user material, and absence of another Cursor run for that worktree. After
+  exit, inspect the exit code and actual artifact. Preserve partial work on
+  interruption and use CLI session resume when safe. Use the least permission
+  needed; keep execution logs and credentials out of the repository.
+- **Independent evidence.** Cursor's completion report is a handoff, not proof
+  of correctness. Codex independently reviews the exact HEAD and diff, checks
+  applicable evidence, and runs the technical correction loop through Cursor
+  without a manual owner relay. Return to the owner only for a material new
+  product, architecture, business/legal, scope, or unresolved trade-off
+  decision.
 - **Codex implementation** remains a narrow exception requiring explicit
   reason and authorization. Implementation is not review: such an exception
   still needs an independent review of the exact implementation artifact.
