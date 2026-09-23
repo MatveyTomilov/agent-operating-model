@@ -12,20 +12,23 @@ operating model.
 
 ## Version and maintenance
 
-The portable operating model version is **1.2.0**, recorded in `VERSION` and the
-`AGENTS.md` provenance header. The 24 September 2026 amendment adds local
-Codex-to-Cursor CLI orchestration while preserving distinct implementation and
-review roles and the existing Git, promotion, release, and deploy gates.
+The portable operating model version is **1.2.1**, recorded in `VERSION` and the
+`AGENTS.md` provenance header. The 24 September 2026 amendment 1.2.1 fixes a
+global Cursor implementation model policy for all projects: always Grok 4.6,
+default effort `high`, Codex selects `xhigh` for complex or risky work, and
+every Cursor CLI invocation must pass `cursor-grok-4.6-high` or
+`cursor-grok-4.6-xhigh`. Auto, `low`, `medium`, and other models are forbidden
+unless the owner changes this global policy.
 
 Codex is the mandatory technical proxy translating Owner + ChatGPT's WHAT into
 a repository-aware Cursor task. Cursor executes that task; Codex reviews and
 controls integration. Task review, product smoke and full release validation
 are distinct levels. Full validation remains mandatory before stable promotion;
 broad suites are not automatically required after every ordinary task.
-When the local Cursor CLI works, Codex launches an explicit approved model in
-the verified task worktree, waits for process exit without repeated model-driven
-polling, and independently reviews the resulting artifact. A manual owner
-copy/paste handoff is not the normal route.
+When the local Cursor CLI works, Codex launches that explicit global model
+identifier in the verified task worktree, waits for process exit without
+repeated model-driven polling, and independently reviews the resulting
+artifact. A manual owner copy/paste handoff is not the normal route.
 
 This canonical documentation repository currently has one maintained line,
 `master`, and no `dev` integration branch. Changes use a short-lived scoped

@@ -1,5 +1,5 @@
 <!-- portable-operating-model
-version: 1.2.0
+version: 1.2.1
 canonical-repository: MatveyTomilov/agent-operating-model
 -->
 
@@ -156,13 +156,14 @@ OWNER
   worktrees.
 - **Local Cursor orchestration.** When a working local Cursor CLI is available,
   Codex launches it directly in the verified task worktree with an explicit
-  repository-approved model and an implementation-ready task. Manual owner
-  copy/paste between Codex and Cursor is not the normal handoff. Codex waits
-  for process completion through a blocking or event-driven mechanism without
-  repeated model-driven status polling, then resumes automatically. Before a
-  substantial launch, verify the worktree, branch, HEAD/base, status, relevant
-  user material, and absence of another Cursor run for that worktree. After
-  exit, inspect the exit code and actual artifact. Preserve partial work on
+  Cursor CLI model identifier required by the global Cursor implementation
+  model policy and an implementation-ready task. Manual owner copy/paste
+  between Codex and Cursor is not the normal handoff. Codex waits for process
+  completion through a blocking or event-driven mechanism without repeated
+  model-driven status polling, then resumes automatically. Before a substantial
+  launch, verify the worktree, branch, HEAD/base, status, relevant user
+  material, and absence of another Cursor run for that worktree. After exit,
+  inspect the exit code and actual artifact. Preserve partial work on
   interruption and use CLI session resume when safe. Use the least permission
   needed; keep execution logs and credentials out of the repository.
 - **Independent evidence.** Cursor's completion report is a handoff, not proof
@@ -187,6 +188,22 @@ OWNER
 - Use at most two substantial parallel worktrees, only when independently
   reviewable without unsafe overlap through migrations, data contracts,
   customer workflow or implementation surfaces. Otherwise work sequentially.
+
+## Cursor implementation model
+
+Cursor implementation is always Grok 4.6. This is a global policy for every
+project, not a per-repository model choice.
+
+- Default effort is `high`. Codex selects `xhigh` for complex or risky work.
+- Verified exact CLI identifiers: `high` = `cursor-grok-4.6-high`;
+  `xhigh` = `cursor-grok-4.6-xhigh`.
+- Every Cursor CLI invocation MUST pass that explicit identifier. Never rely
+  on the CLI default or Auto.
+- Auto, `low`, `medium`, and all other models are forbidden unless the owner
+  explicitly changes this global policy.
+- Projects may add compatible risk triggers that select `xhigh` within this
+  policy. They cannot silently override the model, effort floor, identifier
+  requirement, or forbidden alternatives.
 
 ## Three verification levels
 
